@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Creator App</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #1f2937;
+      color: #f8fafc;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      background-color: #f8fafc;
+      color: #1f2937;
+    }
+
+    .dark-mode {
+      background-color: #1f2937;
+      color: #f8fafc;
+    }
+
+    .dark-mode input[type="text"],
+    .dark-mode textarea,
+    .dark-mode select {
+      background-color: #f8fafc;
+      color: #1f2937;
+    }
+
+    .dark-mode table {
+      color: #f8fafc;
+    }
+  </style>
+</head>
+
+<body class="bg-dark text-light" :class="{ 'dark-mode': isDarkMode }">
+  <div id="app" class="container my-4">
+    <header class="text-center mb-4">
+      <h1 class="display-4">Zeprezo</h1>
+      <h6 class="text-lead">A Content Creator tools</h6>
+    </header>
+
+    <main>
+      <section id="content-form" class="mb-4">
+        <h2 class="text-2xl fw-bold mb-4">Create New Content</h2>
+        <form @submit.prevent="createContent">
+          <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" id="title" v-model="title" required class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <textarea maxlength="60" id="description" v-model="description" rows="4" required
+              class="form-control"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="category" class="form-label">Category:</label>
+            <select id="category" v-model="category" required class="form-select">
+              <option value="">Select category</option>
+              <option value="Tutorial">Tutorial</option>
+              <option value="Review">Review</option>
+              <option value="Vlog">Vlog</option>
+              <option value="Article">Article</option>
+              <option value="Post">Post</option>
+            </select>
+          </div>
+         
+          <div class="mb-3">
+            <label for="social-media" class="form-label">Social Media:</label>
+            <select id="social-media" v-model="socialMedia" required class="form-select">
+              <option value="">Select social media</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Twitter">Twitter</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Tiktok">Tiktok</option>
+              <option value="Threads">Threads</option>
+              <option value="Kaskus">Kaskus</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="priority" class="form-label">Priority:</label>
+            <select id="priority" v-model="priority" required class="form-select">
+              <option value="">Select priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Create</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="content-list">
+        <h2 class="text-2xl fw-bold mb-4">My Content List</h2>
+        <table class="table table-dark">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Priority</th>
+              <th>Social Media</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(content, index) in contentList" :key="index">
+              <td>{{ content.title }}</td>
+              <td>{{ content.description }}</td>
+              <td>{{ content.category }}</td>
+              <td>{{ content.priority }}</td>
+              <td>{{ content.socialMedia }}</td>
+              <td>
+                <button class="btn btn-success me-2" @click="editContent(index)">Edit</button>
+                <button class="btn btn-danger" @click="deleteContent(index)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          isDarkMode: true,
+          title: '',
+          description: '',
+          category: '',
+          priority: '',
+          socialMedia: '',
+          contentList: [],
+          editIndex: -1
+        },
+        methods: {
+          createContent() {
+            if (this.editIndex !== -1) {
+              this.contentList.splice(this.editIndex, 1, {
+                title: this.title,
+                description: this.description,
+                category: this.category,
+                priority: this.priority,
+                socialMedia: this.socialMedia
+              });
+              this.editIndex = -1;
+            } else {
+              this.contentList.push({
+                title: this.title,
+                description: this.description,
+                category: this.category,
+                priority: this.priority,
+                socialMedia: this.socialMedia
+              });
+            }
+            this.resetForm();
+          },
+          editContent(index) {
+            const content = this.contentList[index];
+            this.title = content.title;
+            this.description = content.description;
+            this.category = content.category;
+            this.priority = content.priority;
+            this.socialMedia = content.socialMedia;
+            this.editIndex = index;
+          },
+          deleteContent(index) {
+            this.contentList.splice(index, 1);
+            if (this.editIndex === index) {
+              this.editIndex = -1;
+            }
+          },
+          resetForm() {
+            this.title = '';
+            this.description = '';
+            this.category = '';
+            this.priority = '';
+            this.socialMedia = '';
+          }
+        }
+      });
+    </script>
+  </div>
+</body>
+
+</html>
